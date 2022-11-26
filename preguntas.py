@@ -1,11 +1,8 @@
 """
 Pronostico de la resistencia del concreto usando redes neuronales
 -----------------------------------------------------------------------------------------
-
 La descripción del problema está disponible en:
-
 https://jdvelasq.github.io/courses/notebooks/sklearn_supervised_10_neural_networks/1-02_pronostico_de_la_resistencia_del_concreto.html
-
 """
 
 import pandas as pd
@@ -16,19 +13,19 @@ def pregunta_01():
     Carga y separación de los datos en `X` `y`
     """
     # Lea el archivo `concrete.csv` y asignelo al DataFrame `df`
-    df = pd.read_csv("concrete.csv")  
+    df = pd.read_csv('concrete.csv')    
 
     # Asigne la columna `strength` a la variable `y`.
-    y = df["strength"]
+    y = df.strength.values  
 
     # Asigne una copia del dataframe `df` a la variable `X`.
-    x = df.copy()
+    X = df.copy() 
 
     # Remueva la columna `strength` del DataFrame `X`.
-    x.drop('strength', axis=1, inplace=True)  
+    X.drop('strength',axis = 1,inplace = True)   
 
     # Retorne `X` y `y`
-    return x, y
+    return X, y
 
 
 def pregunta_02():
@@ -68,9 +65,9 @@ def pregunta_03():
     # Importe MLPRegressor
     # Importe MinMaxScaler
     # Importe Pipeline
-    from sklearn.pipeline import Pipeline
-    from sklearn.preprocessing import MinMaxScaler
     from sklearn.neural_network import MLPRegressor
+    from sklearn.preprocessing import MinMaxScaler
+    from sklearn.pipeline import Pipeline
 
     # Cree un pipeline que contenga un estimador MinMaxScaler y un estimador
     # MLPRegressor
@@ -110,13 +107,13 @@ def pregunta_04():
     #   * Use parada temprana
 
     param_grid = {
-        'mlpregressor__hidden_layer_sizes': list(range(1,9)),  
-        'mlpregressor__activation': ['relu'],  
-        'mlpregressor__learning_rate': ['adaptive'],  
-        'mlpregressor__momentum': [0.7, 0.8, 0.9],  
-        'mlpregressor__learning_rate_init': [0.01, 0.05, 0.1],  
-        'mlpregressor__max_iter': [5000],  
-        'mlpregressor__early_stopping': [True],  
+        "mlpregressor__hidden_layer_sizes": range(1,9,1),  
+        "mlpregressor__activation": ['relu'],  
+        "mlpregressor__learning_rate": ['adaptive'],  
+        "mlpregressor__momentum": [0.7,0.8,0.9],  
+        "mlpregressor__learning_rate_init": [0.01,0.05,1],  
+        "mlpregressor__max_iter": [5000],  
+        "mlpregressor__early_stopping": [True],  
     }
 
     estimator = pregunta_03()
@@ -128,8 +125,8 @@ def pregunta_04():
     gridsearchcv = GridSearchCV(
         estimator=estimator,
         param_grid=param_grid,
-        cv = 5, 
-        scoring = 'r2'
+        cv = 5,  
+        scoring = 'r2'  
     )
 
     return gridsearchcv
@@ -141,7 +138,7 @@ def pregunta_05():
     """
 
     # Importe mean_squared_error
-    from sklearn.metrics import mean_squared_error as mse
+    from sklearn.metrics import mean_squared_error
 
     # Cargue las variables.
     x_train, x_test, y_train, y_test = pregunta_02()
@@ -152,20 +149,19 @@ def pregunta_05():
     # Entrene el estimador
     estimator.fit(x_train, y_train)  #
 
-     # Pronostique para las muestras de entrenamiento y validacion
-    y_trian_pred = estimator.predict(x_train) 
+    # Pronostique para las muestras de entrenamiento y validacion
+    y_train_pred = estimator.predict(x_train)  
     y_test_pred = estimator.predict(x_test)  
 
     # Calcule el error cuadrático medio de las muestras
-    mse_train = mse(  
-        y_trian_pred,  
+    mse_train = mean_squared_error(  
         y_train,  
+        y_train_pred,  
     )
-    mse_test = mse(  
-        y_test_pred,  
+    mse_test = mean_squared_error(  
         y_test,  
+        y_test_pred,  
     )
-
 
     # Retorne el mse de entrenamiento y prueba
     return mse_train, mse_test
